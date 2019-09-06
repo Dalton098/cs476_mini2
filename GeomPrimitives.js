@@ -7,6 +7,34 @@ vec3 = glMatrix.vec3;
 //////////////////////////////////////////////
 //This is where you will have to fill in some code
 
+/**
+ * Given three 3D vertices a, b, and c, compute the area 
+ * of the triangle they span
+ * @param {vec3} a First point
+ * @param {vec3} b Second point
+ * @param {vec3} c Third point
+ * 
+ * @return {float} Area of the triangle
+ */
+function getTriangleArea(a, b, c) {
+
+  let ab = vec3.create();
+  let ac = vec3.create();
+
+  vec3.subtract(ab, b, a);
+  vec3.subtract(ac, c, a);
+
+  crossProduct = vec3.create();
+
+  vec3.cross(crossProduct, ab, ac)
+
+  magCrossProduct = Math.sqrt(vec3.dot(crossProduct, crossProduct));
+
+  area = (1 / 2) * magCrossProduct;
+
+  return area;
+}
+
 
 /**
  * Find the intersection of the ray p0 + tv, t >= 0, with the
@@ -23,8 +51,45 @@ vec3 = glMatrix.vec3;
  * Note that a ray can hit at most 2 points on a sphere.
  */
 function rayIntersectSphere(p0, v, c, r) {
-	// TODO: Fill this in
-	return []; //This is a dummy value!  Replace with your answer
+
+  let p0c = vec3.create();
+  vec3.subtract(p0c, p0, c);
+
+  let eqnA = vec3.dot(v, v);
+  let eqnB = (2 * vec3.dot(p0c, v));
+  let eqnC = vec3.dot(p0c, p0c) - (r * r);
+
+  let discrim = (eqnB * eqnB) - (4 * eqnA * eqnC);
+
+  var toReturn = [];
+  var intersect1 = vec3.create();
+  var intersect2 = vec3.create();
+
+  if (discrim < 0) {
+    return toReturn;
+
+  } else {
+
+    firstT = (-eqnB - Math.sqrt(discrim)) / (2 * eqnA);
+
+    if (firstT > 0) {
+      vec3.scaleAndAdd(intersect1, p0, v, firstT);
+      toReturn.push(intersect1);
+    }
+
+    if (discrim > 0) {
+      secondT = (-eqnB + Math.sqrt(discrim)) / (2 * eqnA);
+
+      if (secondT > 0) {
+        vec3.scaleAndAdd(intersect2, p0, v, secondT);
+        toReturn.push(intersect2);
+      }
+      
+    }
+
+  }
+
+  return toReturn;
 }
 
 
@@ -45,8 +110,8 @@ function rayIntersectSphere(p0, v, c, r) {
  *              otherwise, return [0, 0, 0]
  */
 function getBarycentricCoords(a, b, c, p) {
-	// TODO: Fill this in
-	return vec3.create();  //This is a dummy value!  Replace with your answer
+  // TODO: Fill this in
+  return vec3.create();  //This is a dummy value!  Replace with your answer
 }
 
 
@@ -68,8 +133,8 @@ function getBarycentricCoords(a, b, c, p) {
 *               return an empty list
  */
 function rayIntersectTriangle(p0, v, a, b, c) {
-	// TODO: Fill this in
-	return []; //This is a dummy value!  Replace with your answer
+  // TODO: Fill this in
+  return []; //This is a dummy value!  Replace with your answer
 }
 
 
@@ -85,31 +150,35 @@ function rayIntersectTriangle(p0, v, a, b, c) {
 
 //This is the way I hack the axes to be equal
 function getAxesEqual(vs) {
-    //Determine the axis ranges
-    minval = 0;
-    maxval = 0;
-    for (var i = 0; i < vs.length; i++) {
-        for (var j = 0; j < 3; j++) {
-            if (vs[i][j] < minval){ minval = vs[i][j]; }
-            if (vs[i][j] > maxval){ maxval = vs[i][j]; }
-        }
+  //Determine the axis ranges
+  minval = 0;
+  maxval = 0;
+  for (var i = 0; i < vs.length; i++) {
+    for (var j = 0; j < 3; j++) {
+      if (vs[i][j] < minval) { minval = vs[i][j]; }
+      if (vs[i][j] > maxval) { maxval = vs[i][j]; }
     }
-    return {
-    x:{ x: [minval, maxval], y: [0, 0], z: [0, 0],
-      mode: 'lines', line: {color: '#000000', width: 1}, type: 'scatter3d', name:'xaxis'
+  }
+  return {
+    x: {
+      x: [minval, maxval], y: [0, 0], z: [0, 0],
+      mode: 'lines', line: { color: '#000000', width: 1 }, type: 'scatter3d', name: 'xaxis'
     },
-    y:{ x: [0, 0], y: [minval, maxval], z: [0, 0],
-      mode: 'lines', line: {color: '#000000', width: 1}, type: 'scatter3d', name:'yaxis'
+    y: {
+      x: [0, 0], y: [minval, maxval], z: [0, 0],
+      mode: 'lines', line: { color: '#000000', width: 1 }, type: 'scatter3d', name: 'yaxis'
     },
-    z:{ x: [0, 0], y: [0, 0], z: [minval, maxval],
-      mode: 'lines', line: {color: '#000000', width: 1}, type: 'scatter3d', name:'zaxis'
-    }};
+    z: {
+      x: [0, 0], y: [0, 0], z: [minval, maxval],
+      mode: 'lines', line: { color: '#000000', width: 1 }, type: 'scatter3d', name: 'zaxis'
+    }
+  };
 }
 
 function getMousePos(canvas, evt) {
-	var rect = canvas.getBoundingClientRect();
-	return {
-	    X: evt.clientX - rect.left,
-	    Y: evt.clientY - rect.top
-	};
+  var rect = canvas.getBoundingClientRect();
+  return {
+    X: evt.clientX - rect.left,
+    Y: evt.clientY - rect.top
+  };
 }
