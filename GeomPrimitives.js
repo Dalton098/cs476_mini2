@@ -84,7 +84,7 @@ function rayIntersectSphere(p0, v, c, r) {
         vec3.scaleAndAdd(intersect2, p0, v, secondT);
         toReturn.push(intersect2);
       }
-      
+
     }
 
   }
@@ -110,8 +110,33 @@ function rayIntersectSphere(p0, v, c, r) {
  *              otherwise, return [0, 0, 0]
  */
 function getBarycentricCoords(a, b, c, p) {
-  // TODO: Fill this in
-  return vec3.create();  //This is a dummy value!  Replace with your answer
+
+  let overallArea = getTriangleArea(a, b, c);
+  let Aa = getTriangleArea(b, p, c) / overallArea;
+  let Ab = getTriangleArea(a, p, c) / overallArea;
+  let Ac = getTriangleArea(a, p, b) / overallArea;
+
+  toReturn = vec3.create();
+
+   if ((Aa + Ab + Ac) > 1.01) {
+     return toReturn;
+   }
+
+  if (overallArea === 0) {
+
+    if (vec3.equals(a, p)) {
+      toReturn[0] = 1;
+      return toReturn;
+    }
+
+    return toReturn;
+  }
+
+  toReturn[0] = Aa;
+  toReturn[1] = Ab;
+  toReturn[2] = Ac;
+
+  return toReturn;  //This is a dummy value!  Replace with your answer
 }
 
 
