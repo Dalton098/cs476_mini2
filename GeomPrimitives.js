@@ -118,9 +118,11 @@ function getBarycentricCoords(a, b, c, p) {
 
   toReturn = vec3.create();
 
-   if ((Aa + Ab + Ac) > 1.01) {
-     return toReturn;
-   }
+  // Using 1.01 because there was some truncating/rounding error from JS where 
+  // sometimes the points added up to over 1 even though it was the correct answer
+  if ((Aa + Ab + Ac) > 1.01) {
+    return toReturn;
+  }
 
   if (overallArea === 0) {
 
@@ -158,8 +160,54 @@ function getBarycentricCoords(a, b, c, p) {
 *               return an empty list
  */
 function rayIntersectTriangle(p0, v, a, b, c) {
-  // TODO: Fill this in
-  return []; //This is a dummy value!  Replace with your answer
+
+  let edge1 = vec3.create();
+  let edge2 = vec3.create();
+  let pvec = vec3.create();
+  let tvec = vec3.create();
+  let qvec = vec3.create();
+  let determinant;
+  let u;
+  let w;
+  let t;
+
+  vec3.subtract(edge1, b, a);
+  vec3.subtract(edge2, c, a);
+
+  vec3.cross(pvec, v, edge2);
+
+  determinant = vec3.dot(edge1, pvec);
+
+  // Using 0.01 because of rounding issues with JS
+  if (determinant < 0.01) {
+    return [];
+  }
+
+  vec3.subtract(tvec, p0, a);
+  u = vec3.dot(tvec, pvec);
+
+  // Using 0.01 because of rounding issues with JS
+  if (u < 0.01 || u > determinant) {
+    return [];
+  }
+
+  vec3.cross(qvec, tvec, edge1);
+  w = vec3.dot(v, qvec);
+
+  // Using 0.01 because of rounding issues with JS
+  if (w < 0.01 || (u + w) > determinant) {
+    return [];
+  }
+
+  t = vec3.dot(edge2, qvec) / determinant;
+  let toReturn = [];
+  let intersection = vec3.create();
+
+  vec3.scaleAndAdd(intersection, p0, v, t);
+
+  toReturn.push(intersection);
+
+  return toReturn;
 }
 
 
