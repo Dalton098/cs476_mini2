@@ -170,18 +170,18 @@ function rayIntersectTriangle(p0, v, a, b, c) {
   let pvec = vec3.create();
   vec3.cross(pvec, v, ac);
 
-  let det = vec3.dot(ab, pvec);
+  let determinant = vec3.dot(ab, pvec);
 
   // Using 0.01 in the event of floating point errors
-  if (Math.abs(det) < 0.01) {
+  if (Math.abs(determinant) < 0.01) {
     return [];
   }
 
-  let invDet = 1 / det;
+  let inverseDeterminant = 1 / determinant;
 
   let tvec = vec3.create();
   vec3.subtract(tvec, p0, a);
-  let u = vec3.dot(tvec, pvec) * invDet;
+  let u = vec3.dot(tvec, pvec) * inverseDeterminant;
 
   if (u < 0 || u > 1) {
     return [];
@@ -189,13 +189,13 @@ function rayIntersectTriangle(p0, v, a, b, c) {
 
   let qvec = vec3.create();
   vec3.cross(qvec, tvec, ab);
-  let w = vec3.dot(v, qvec) * invDet;
+  let w = vec3.dot(v, qvec) * inverseDeterminant;
 
   if (w < 0 || u + w > 1) {
     return [];
   }
 
-  let t = vec3.dot(ac, qvec) * invDet;
+  let t = vec3.dot(ac, qvec) * inverseDeterminant;
 
   if (t < 0) {
     return [];
