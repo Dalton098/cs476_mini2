@@ -118,8 +118,7 @@ function getBarycentricCoords(a, b, c, p) {
 
   toReturn = vec3.create();
 
-  // Using 1.01 because there was some truncating/rounding error from JS where 
-  // sometimes the points added up to over 1 even though it was the correct answer
+  // Using 1.01 because of floating point errors
   if ((Aa + Ab + Ac) > 1.01) {
     return toReturn;
   }
@@ -161,53 +160,54 @@ function getBarycentricCoords(a, b, c, p) {
  */
 function rayIntersectTriangle(p0, v, a, b, c) {
 
-  let edge1 = vec3.create();
-  let edge2 = vec3.create();
-  let pvec = vec3.create();
-  let tvec = vec3.create();
-  let qvec = vec3.create();
-  let determinant;
-  let u;
-  let w;
-  let t;
-
-  vec3.subtract(edge1, b, a);
-  vec3.subtract(edge2, c, a);
-
-  vec3.cross(pvec, v, edge2);
-
-  determinant = vec3.dot(edge1, pvec);
-
-  // Using 0.01 because of rounding issues with JS
-  if (determinant < 0.01) {
-    return [];
-  }
-
-  vec3.subtract(tvec, p0, a);
-  u = vec3.dot(tvec, pvec);
-
-  // Using 0.01 because of rounding issues with JS
-  if (u < 0.01 || u > determinant) {
-    return [];
-  }
-
-  vec3.cross(qvec, tvec, edge1);
-  w = vec3.dot(v, qvec);
-
-  // Using 0.01 because of rounding issues with JS
-  if (w < 0.01 || (u + w) > determinant) {
-    return [];
-  }
-
-  t = vec3.dot(edge2, qvec) / determinant;
   let toReturn = [];
-  let intersection = vec3.create();
 
-  vec3.scaleAndAdd(intersection, p0, v, t);
+  let ab = vec3.create();
+  let ac = vec3.create();
+  vec3.subtract(ab, b, a);
+  vec3.subtract(ac, c, a);
 
-  toReturn.push(intersection);
+  let pvec = vec3.create();
+  vec3.cross(pvec, v, ac);
+
+  let det = vec3.dot(ab, pvec);
+
+  // Using 0.01 in the event of floating point errors
+  if (Math.abs(det) < 0.01) {
+    return [];
+  }
+
+  let invDet = 1 / det;
+
+  let tvec = vec3.create();
+  vec3.subtract(tvec, p0, a);
+  let u = vec3.dot(tvec, pvec) * invDet;
+
+  if (u < 0 || u > 1) {
+    return [];
+  }
+
+  let qvec = vec3.create();
+  vec3.cross(qvec, tvec, ab);
+  let w = vec3.dot(v, qvec) * invDet;
+
+  if (w < 0 || u + w > 1) {
+    return [];
+  }
+
+  let t = vec3.dot(ac, qvec) * invDet;
+
+  if (t < 0) {
+    return [];
+  }
+
+  let intersect = vec3.create();
+  vec3.scaleAndAdd(intersect, p0, v, t);
+
+  toReturn.push(intersect);
 
   return toReturn;
+
 }
 
 
