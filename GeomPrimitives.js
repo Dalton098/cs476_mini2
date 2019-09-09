@@ -35,7 +35,6 @@ function getTriangleArea(a, b, c) {
   return area;
 }
 
-
 /**
  * Find the intersection of the ray p0 + tv, t >= 0, with the
  * sphere centered at c with radius r.
@@ -92,7 +91,6 @@ function rayIntersectSphere(p0, v, c, r) {
   return toReturn;
 }
 
-
 /**
  * Compute the barycentric coordinates of a point p with respect to a triangle /\abc
  * 
@@ -111,12 +109,12 @@ function rayIntersectSphere(p0, v, c, r) {
  */
 function getBarycentricCoords(a, b, c, p) {
 
+  let toReturn = vec3.create();
+
   let overallArea = getTriangleArea(a, b, c);
   let Aa = getTriangleArea(b, p, c) / overallArea;
   let Ab = getTriangleArea(a, p, c) / overallArea;
   let Ac = getTriangleArea(a, p, b) / overallArea;
-
-  toReturn = vec3.create();
 
   // Using 1.01 because of floating point errors
   if ((Aa + Ab + Ac) > 1.01) {
@@ -137,10 +135,8 @@ function getBarycentricCoords(a, b, c, p) {
   toReturn[1] = Ab;
   toReturn[2] = Ac;
 
-  return toReturn;  //This is a dummy value!  Replace with your answer
+  return toReturn;
 }
-
-
 
 /**
  * Find the intersection of a ray with a triangle
@@ -160,6 +156,10 @@ function getBarycentricCoords(a, b, c, p) {
  */
 function rayIntersectTriangle(p0, v, a, b, c) {
 
+  /**
+   * Note: My rayIntersectTriangle follows Möller–Trumbore's intersection algorithm
+   */
+
   let toReturn = [];
 
   let ab = vec3.create();
@@ -172,7 +172,7 @@ function rayIntersectTriangle(p0, v, a, b, c) {
 
   let determinant = vec3.dot(ab, pvec);
 
-  // Using 0.01 in the event of floating point errors
+  // Using 0.01 in the event of floating point errors but essentially checking if = 0
   if (Math.abs(determinant) < 0.01) {
     return [];
   }
