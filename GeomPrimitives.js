@@ -112,12 +112,12 @@ function getBarycentricCoords(a, b, c, p) {
   let toReturn = vec3.create();
 
   let overallArea = getTriangleArea(a, b, c);
-  let Aa = getTriangleArea(b, p, c) / overallArea;
-  let Ab = getTriangleArea(a, p, c) / overallArea;
-  let Ac = getTriangleArea(a, p, b) / overallArea;
+  let alpha = getTriangleArea(b, p, c) / overallArea;
+  let beta = getTriangleArea(a, p, c) / overallArea;
+  let gamma = getTriangleArea(a, p, b) / overallArea;
 
   // Using 1.01 because of floating point errors
-  if ((Aa + Ab + Ac) > 1.01) {
+  if ((alpha + beta + gamma) > 1.01) {
     return toReturn;
   }
 
@@ -131,9 +131,9 @@ function getBarycentricCoords(a, b, c, p) {
     return toReturn;
   }
 
-  toReturn[0] = Aa;
-  toReturn[1] = Ab;
-  toReturn[2] = Ac;
+  toReturn[0] = alpha;
+  toReturn[1] = beta;
+  toReturn[2] = gamma;
 
   return toReturn;
 }
